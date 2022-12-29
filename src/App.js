@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import searchIcon from "./search.svg";
+import MovieCard from "./MovieCard";
+// movie api key=6a9e1dcc
 
-function App() {
+const App = () => {
+    const api_url = "http://www.omdbapi.com/?apikey=6a9e1dcc";
+    const [movies, setMovies] = useState([]);
+    const [search, setSearch] = useState("");
+
+  const getMovies = async (title) => {
+    let res = await fetch(`${api_url}&s=${title}`);
+    let data = await res.json();
+    setMovies(data.Search);
+  };
+
+  const searchMovies = async (title) => {
+    let res = await fetch(`${api_url}&s=${title}`);
+    let data = await res.json();
+    setMovies(data.Search);
+  };
+
+  useEffect(() => {
+    getMovies("naruto");
+    searchMovies("");
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+        {console.log(movies)}
+      <h1>MoviesFlix</h1>
+      <div className="search">
+        <input
+          placeholder="Search Movie here..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <img
+          src={searchIcon}
+          alt="Search"
+          onClick={() => searchMovies(search)}
+        />
+      </div>
+      {movies?.length > 0 ? (
+        <div className="container">
+          {movies.map((e) => (
+            <MovieCard key={e.Title} movie={e} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <h2>No Movies Found!</h2>
+        </div>
+      )}
     </div>
   );
-}
-
+};
 export default App;
